@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard | Coding Tracker</title>
+  <style>
+    /* ... (KEEP YOUR CSS AS IT IS) ... */
+    body { background: #303030; color: #fff; font-family: Arial; margin: 0; }
+    header { background: #1f1f1f; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+    a { color: #ff5252; cursor: pointer; text-decoration: none; }
+    .container { padding: 20px; max-width: 1100px; margin: auto; }
+    .card { background: #1f1f1f; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+    .inputs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    input { padding: 8px; border: none; border-radius: 4px; background: #2a2a2a; color: white; font-size: 14px; }
+    button { background: #2196f3; color: white; cursor: pointer; border: none; padding: 8px 16px; border-radius: 4px; margin-top: 10px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+    .stat-box { background: #2a2a2a; padding: 10px; text-align: center; border-radius: 4px; }
+    .platform { margin-top: 15px; border-top: 1px solid #444; padding-top: 15px; }
+    .platform h4 { margin-bottom: 10px; color: #90caf9; }
+    small { color: #aaa; }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div>Welcome, <span id="user">Loading...</span></div>
+  <a onclick="logout()">Logout</a>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h3>Link Coding Accounts</h3>
+    <small>Enter only username (not full URL)</small>
+
+    <div class="inputs">
+      <input id="lc" placeholder="LeetCode">
+      <input id="cf" placeholder="Codeforces">
+      <input id="cc" placeholder="CodeChef">
+      <input id="gfg" placeholder="GFG">
+    </div>
+
+    <button onclick="saveAccounts()">Save</button>
+  </div>
+
+  <div class="card">
+    <h3>Overall Performance</h3>
+
+    <div class="stats-grid">
+      <div class="stat-box"><p>Total Problems</p><h2 id="totalSolved">0</h2></div>
+      <div class="stat-box"><p>Total Contests</p><h2 id="totalContests">0</h2></div>
+      <div class="stat-box"><p>Best Rating</p><h2 id="bestRating">0</h2></div>
+      <div class="stat-box"><p>Platforms</p><h2 id="platformCount">0</h2></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Platform-wise Statistics</h3>
+    <div id="platformStats"></div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+// ⭐ FIX: Ensure this points to 127.0.0.1:4000
+const API = "http://127.0.0.1:4000";
+
+const totalSolvedEl = document.getElementById("totalSolved");
+const totalContestsEl = document.getElementById("totalContests");
+const bestRatingEl = document.getElementById("bestRating");
+const platformCountEl = document.getElementById("platformCount");
+const platformStats = document.getElementById("platformStats");
+
+// Input Fields
+const lcInput = document.getElementById("lc");
+const cfInput = document.getElementById("cf");
+const ccInput = document.getElementById("cc");
+const gfgInput = document.getElementById("gfg");
+
+/* ================= AUTH CHECK ================= */
+async function loadUser() {
+  try {
+    const res = await axios.get(`${API}/api/dashboard/me`, { withCredentials: true });
+    document.getElementById("user").innerText = res.data.emailId;
+    
+    // Pre-fill inputs if data exists
+    if(res.data.platforms) {
+        if(res.data.platforms.LeetCode) lcInput.value = res.data.platforms.LeetCode.username || "";
+        if(res.data.platforms.Codeforces) cfInput.value = res.data.platforms.Codeforces.username || "";
+        if(res.data.platforms.CodeChef) ccInput.value = res.data.platforms.CodeChef.username || "";
+        if(res.data.platforms.GFG) gfgInput.value = res.data.platforms.GFG.username || "";
+    }
+
+    await loadStats();
+  } catch (err) {
+    console.error("Auth Error:", err);
+    window.location.replace("login.html");
+  }
+}
+
+/* ================= LOGOUT ================= */
+async function logout() {
+  try {
+    await axios.post(`${API}/api/auth/logout`, {}, { withCredentials: true });
+    window.location.replace("login.html");
+  } catch {
+    alert("Logout failed");
+  }
+}
+
+/* ================= SAVE ACCOUNTS ================= */
+async function saveAccounts() {
+  const platforms = {};
+
+  if (lcInput.value) platforms.LeetCode = { username: lcInput.value, profile: `https://leetcode.com/u/${lcInput.value}/` };
+  if (cfInput.value) platforms.Codeforces = { username: cfInput.value, profile: `https://codeforces.com/profile/${cfInput.value}` };
+  if (ccInput.value) platforms.CodeChef = { username: ccInput.value, profile: `https://www.codechef.com/users/${ccInput.value}` };
+  if (gfgInput.value) platforms.GFG = { username: gfgInput.value, profile: `https://auth.geeksforgeeks.org/user/${gfgInput.value}` };
+
+  try {
+    const res = await axios.post(
+      `${API}/api/dashboard/accounts`,
+      { platforms },
+      { withCredentials: true }
+    );
+    // ⭐ Update UI immediately with the response from backend
+    updateDashboardUI(res.data);
+    alert("Accounts saved and stats updated!");
+  } catch (err) {
+    alert("Failed to save accounts");
+  }
+}
+
+/* ================= LOAD STATS ================= */
+async function loadStats() {
+  try {
+      const res = await axios.get(`${API}/api/dashboard/stats`, { withCredentials: true });
+      updateDashboardUI(res.data);
+  } catch (err) {
+      console.log("Stats Load Error", err);
+  }
+}
+
+/* ================= HELPER: UPDATE UI ================= */
+function updateDashboardUI(data) {
+  const { platforms, totalSolved, totalContests, bestRating, platformCount } = data;
+
+  totalSolvedEl.innerText = totalSolved;
+  totalContestsEl.innerText = totalContests;
+  bestRatingEl.innerText = bestRating;
+  platformCountEl.innerText = platformCount;
+
+  let html = "";
+  for (let p in platforms) {
+    const s = platforms[p];
+    if(!s.username) continue; // Skip empty platforms
+
+    html += `
+      <div class="platform">
+        <h4>${p}</h4>
+        <small>${s.profile || ""}</small>
+        <div class="stats-grid">
+          <div class="stat-box"><p>Solved</p><h3>${s.solved || 0}</h3></div>
+          <div class="stat-box"><p>Contests</p><h3>${s.contests || 0}</h3></div>
+          <div class="stat-box"><p>Rating</p><h3>${s.rating || 0}</h3></div>
+          <div class="stat-box"><p>Rank</p><h3>${s.rank || 0}</h3></div>
+        </div>
+      </div>
+    `;
+  }
+  platformStats.innerHTML = html;
+}
+
+/* ================= INIT ================= */
+loadUser();
+</script>
+
+</body>
+</html>
