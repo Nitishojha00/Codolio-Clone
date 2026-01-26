@@ -1,4 +1,4 @@
-const User = require("../models/user");
+const User = require("../models/User");
 
 const fetchLeetCode = require("../utils/leetcode");
 const fetchCodeforces = require("../utils/codeforces");
