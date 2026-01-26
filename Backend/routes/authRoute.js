@@ -63,14 +63,17 @@ router.post("/signup-generate-otp", async (req, res) => {
 
 
 
+const isProd = process.env.NODE_ENV === "production";
+
 const cookieOptions = {
   httpOnly: true,
   maxAge: 60 * 60 * 1000, // 1 hour
-  sameSite: "lax",        // ✅ works on localhost
-  secure: false,         // ✅ MUST be false on http://localhost
-  domain: "127.0.0.1",
+  sameSite: isProd ? "None" : "Lax",
+  secure: isProd,        // true on Render (HTTPS)
   path: "/"
+  // ❌ DO NOT set domain
 };
+
 
 /* ================= SIGNUP : VERIFY OTP ================= */
 router.post("/signup-verify-otp", async (req, res) => {
