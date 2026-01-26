@@ -3,7 +3,9 @@ const redisClient = require("../config/redis");
 
 module.exports = async (req, res, next) => {
   try {
+    // console.log("AUTH HEADER:", req.headers.authorization); // 👈 DEBUG
     const token = req.cookies.token;
+    // console.log(token);
     if (!token) throw new Error("No token");
 
     const isBlocked = await redisClient.get(`token:${token}`);

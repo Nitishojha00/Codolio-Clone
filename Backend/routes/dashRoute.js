@@ -1,14 +1,16 @@
 const express = require("express");
-const dashRouter = express.Router();
-const auth = require("../middlewares/auth");
+const router = express.Router();
+
 const {
   getMe,
   saveAccounts,
   getDashboard
 } = require("../controllers/dashboardController");
 
-dashRouter.get("/me", auth, getMe);
-dashRouter.post("/accounts", auth, saveAccounts);
-dashRouter.get("/stats", auth, getDashboard);
+const auth = require("../middlewares/auth");
 
-module.exports = dashRouter;
+router.get("/me", auth, getMe);
+router.post("/accounts", auth, saveAccounts);
+router.get("/dashboard", auth, getDashboard);
+
+module.exports = router;

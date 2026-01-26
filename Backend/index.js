@@ -13,15 +13,20 @@ dotenv.config();
 
 // 1. FIX CORS: Add 5500 (Live Server default)
 app.use(cors({
-  origin: ["http://127.0.0.1:5500", "http://localhost:5500", "http://127.0.0.1:3000", "http://localhost:3000"], 
+  origin: ["http://127.0.0.1:3000"], 
   credentials: true 
 }));
 
+// app.js
 app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api/auth', authRoute);
 app.use("/api/dashboard", dashRouter);
+app.post("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.json({ message: "Logged out" });
+});
 
 // 2. BETTER SERVER STARTUP
 const InitializeConnection = async () => {

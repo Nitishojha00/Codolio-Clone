@@ -8,7 +8,8 @@ const platformSchema = new mongoose.Schema({
 
 const userSchema = new mongoose.Schema(
   {
-    emailId: {
+    name: String,
+    email: {
       type: String,
       required: true,
       unique: true,
@@ -32,4 +33,4 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.models.User || mongoose.model("User", userSchema);

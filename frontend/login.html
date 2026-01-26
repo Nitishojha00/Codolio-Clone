@@ -1,93 +1,134 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Login | Coding Tracker</title>
+  <meta charset="UTF-8" />
+  <title>Login</title>
+
+  <!-- Axios CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
-    body {
-      background: #303030;
-      color: #fff;
-      font-family: Arial;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
     }
 
-    .box {
-      background: #1f1f1f;
-      padding: 30px;
-      width: 320px;
-      border-radius: 6px;
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      background: #fff;
+      width: 360px;
+      padding: 28px;
+      border-radius: 12px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
     }
 
     h2 {
       text-align: center;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+      color: #333;
     }
 
-    input, button {
+    input {
       width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 4px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
     }
 
     button {
-      background: #4caf50;
-      color: white;
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: #667eea;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 500;
       cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
     }
 
-    p {
-      margin-top: 15px;
+    button:hover {
+      background: #5a6ee0;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .link {
       text-align: center;
+      margin-top: 14px;
       font-size: 14px;
     }
 
-    a {
-      color: #90caf9;
+    .link a {
+      color: #667eea;
       text-decoration: none;
+      font-weight: 500;
+    }
+
+    .link a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 
 <body>
 
-<div class="box">
-  <h2>Login</h2>
+  <div class="card">
+    <h2>Welcome Back</h2>
 
-  <input type="email" id="email" placeholder="Email ID">
-  <input type="password" id="password" placeholder="Password">
+    <input id="email" placeholder="Email Address">
+    <input id="password" type="password" placeholder="Password">
 
-  <button onclick="login()">Login</button>
+    <button onclick="login()">Login</button>
 
-  <p>New user? <a href="register.html">Register</a></p>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <div class="link">
+      Don’t have an account? <a href="signup.html">Create one</a>
+    </div>
+  </div>
 
 <script>
-  async function login() {
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
+  // 🔥 VERY IMPORTANT
+  axios.defaults.withCredentials = true;
 
+  async function login() {
     try {
-      const res = await axios.post(
+      await axios.post(
         "http://127.0.0.1:4000/api/auth/login",
-        { emailId: email, password },
         {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true   // ⭐ REQUIRED
+          email: document.getElementById("email").value,
+          password: document.getElementById("password").value
         }
       );
 
+      // ❌ DO NOT read token
+      // ❌ DO NOT store token in localStorage
 
       window.location.href = "dashboard.html";
-
     } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
+      alert(err.response?.data || "Login failed");
     }
   }
 </script>
