@@ -9,6 +9,7 @@ const router = express.Router();
 
 /* TEMP OTP STORE (simple testing) */
 let pendingSignup = null;
+const limit = 30;
 
 /* ================= SIGNUP : GENERATE OTP ================= */
 const redis = require("../config/redis");
@@ -29,7 +30,7 @@ router.post("/signup-generate-otp", async (req, res) => {
     await redis.expire(limitKey, 3 * 60 * 60); // 3 hours
   }
 
-  if (count > 3) {
+  if (count > limit) {
     return res
       .status(429)
       .send("OTP limit exceeded. Try again after 3 hours.");
