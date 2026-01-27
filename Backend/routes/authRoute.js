@@ -64,15 +64,12 @@ router.post("/signup-generate-otp", async (req, res) => {
 
 
 
-const isProd = process.env.NODE_ENV === "production";
-
 const cookieOptions = {
   httpOnly: true,
   maxAge: 60 * 60 * 1000, // 1 hour
-  sameSite: isProd ? "None" : "Lax",
-  secure: isProd,        // true on Render (HTTPS)
+  sameSite: "None",      // 🔥 REQUIRED
+  secure: true,          // 🔥 REQUIRED
   path: "/"
-  // ❌ DO NOT set domain
 };
 
 
