@@ -122,6 +122,7 @@
   </div>
 
 <script>
+  const API = "http://127.0.0.1:4000";
   axios.defaults.withCredentials = true;
 
   let signupId = null;
@@ -129,7 +130,7 @@
   async function generateOTP() {
     try {
       const res = await axios.post(
-        "https://codolio-clone.onrender.com/api/auth/signup-generate-otp",
+        `${API}/api/auth/signup-generate-otp`,
         {
           name: document.getElementById("name").value,
           email: document.getElementById("email").value,
@@ -149,7 +150,7 @@
   async function verifyOTP() {
     try {
       await axios.post(
-        "https://codolio-clone.onrender.com/api/auth/signup-verify-otp",
+        `${API}/api/auth/signup-verify-otp`,
         {
           signupId,
           otp: document.getElementById("otp").value

@@ -1,4 +1,5 @@
-const API_BASE_URL = 'https://codolio-clone.vercel.app'; // ⚠️ Check if you need '/api' here based on your server.js
+const API_BASE_URL = "http://127.0.0.1:4000"; // ⚠️ Check if you need '/api' here based on your server.js
+axios.defaults.withCredentials = true;
 
 let currentState = {
     view: 'importance',
@@ -51,18 +52,18 @@ async function fetchData() {
 
     switch (currentState.view) {
         case 'importance':
-            url = `${API_BASE_URL}/problemByImportance`;
+            url = `${API_BASE_URL}/api/notes/problemByImportance`;
             params = { page: currentState.page };
             break;
         case 'all':
-            url = `${API_BASE_URL}/problem`;
+            url = `${API_BASE_URL}/api/notes/problem`;
             params = { page: currentState.page };
             break;
         case 'tag':
-            url = `${API_BASE_URL}/tag/${currentState.tag}`;
+            url = `${API_BASE_URL}/api/notes/tag/${currentState.tag}`;
             break;
         case 'stars':
-            url = `${API_BASE_URL}/stars/${currentState.stars}`;
+            url = `${API_BASE_URL}/api/notes/stars/${currentState.stars}`;
             break;
     }
 
@@ -142,7 +143,7 @@ async function handleCreateProblem(e) {
     };
 
     try {
-        const response = await axios.post(`${API_BASE_URL}/new`, payload);
+        const response = await axios.post(`${API_BASE_URL}/api/notes/new`, payload);
         if (response.data.success) {
             closeModal('createModal');
             e.target.reset();
@@ -160,7 +161,7 @@ async function handleCreateProblem(e) {
 
 async function fetchProblemDetails(id) {
     try {
-        const response = await axios.get(`${API_BASE_URL}/problemById/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/api/notes/problemById/${id}`);
         const result = response.data;
 
         if (result.success) {
@@ -243,7 +244,7 @@ async function fetchProblemDetails(id) {
 async function deleteProblem(id) {
     if(!confirm("Delete this problem?")) return;
     try {
-        const response = await axios.delete(`${API_BASE_URL}/problem/${id}`);
+        const response = await axios.delete(`${API_BASE_URL}/api/notes/problem/${id}`);
         if (response.data.success) fetchData();
     } catch (error) {
         alert(error.response?.data?.message || 'Error deleting');
@@ -289,3 +290,10 @@ function toggleLoader(show) {
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 window.onclick = function(e) { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; }
+
+async function logout() {
+  try {
+    await axios.post("/logout");
+  } catch {}
+  window.location.replace("login.html");
+}

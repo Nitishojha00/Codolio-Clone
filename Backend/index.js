@@ -8,6 +8,7 @@ const dotenv = require('dotenv');
 const cookieParser = require("cookie-parser");
 const authRoute = require('./routes/authRoute');
 const dashRouter = require('./routes/dashRoute');
+const noteRouter = require('./routes/notesRoutes')
 
 dotenv.config();
 
@@ -23,6 +24,8 @@ app.use(cookieParser());
 
 app.use('/api/auth', authRoute);
 app.use("/api/dashboard", dashRouter);
+app.use("/api/notes", noteRouter);
+
 app.post("/logout", (req, res) => {
   res.clearCookie("token");
   res.json({ message: "Logged out" });

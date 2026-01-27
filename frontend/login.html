@@ -111,12 +111,13 @@
 
 <script>
   // 🔥 VERY IMPORTANT
+  const API = "http://127.0.0.1:4000";
   axios.defaults.withCredentials = true;
 
   async function login() {
     try {
       await axios.post(
-        "https://codolio-clone.onrender.com/api/auth/login",
+        `${API}/api/auth/login`,
         {
           email: document.getElementById("email").value,
           password: document.getElementById("password").value

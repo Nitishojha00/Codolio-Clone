@@ -60,7 +60,12 @@ const noteSchema = new mongoose.Schema(
       type: String,
       trim: true,
       maxlength: 1000
-    }
+    },
+    user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",   // 🔗 reference
+    required: true
+  }
   },
   {
     timestamps: true // 🔥 auto adds createdAt & updatedAt

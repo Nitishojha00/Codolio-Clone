@@ -7,37 +7,39 @@ const Note = require("../models/Note");
 exports.createProblem = async (req, res) => {
   try {
 
-        // 1️⃣ Check duplicate problem name (global OR per user — choose)
-     let problemName = req.body.problemName?.trim().toLowerCase()
-     const existing = await Note.findOne({ problemName });
+    // 1️⃣ Check duplicate problem name (PER USER)
+    let problemName = req.body.problemName?.trim().toLowerCase();
+    const existing = await Note.findOne({ problemName, user: req.userId });
 
-      if (existing) {
-        return res.status(409).json({
-          success: false,
-          message: "Problem already exists"
-        });
-      }
-    // 1️⃣ Find last inserted problem (highest problemId)
+    if (existing) {
+      return res.status(409).json({
+        success: false,
+        message: "Problem already exists"
+      });
+    }
+
+    // 2️⃣ Find last inserted problem (GLOBAL problemId – unchanged logic)
     const lastProblem = await Note.findOne()
       .sort({ problemId: -1 })
       .select("problemId");
-  
-      if(lastProblem.problemId===50)      // user cannot make more that 50 problems
-      {
-        return res.status(409).json({
-          success: false,
-          message: "Only 50 Problems Can Be Created"
-        });
-      }
-    // 2️⃣ Decide next problemId
+
+    if (lastProblem && lastProblem.problemId === 50) {
+      return res.status(409).json({
+        success: false,
+        message: "Only 50 Problems Can Be Created"
+      });
+    }
+
+    // 3️⃣ Decide next problemId
     const nextProblemId = lastProblem ? lastProblem.problemId + 1 : 1;
 
-    req.body.problemName = req.body.problemName?.trim().toLowerCase();
+    req.body.problemName = problemName;
 
-    // 3️⃣ Create new problem with auto problemId
+    // 4️⃣ Create new problem (ATTACH USER 🔥)
     const note = await Note.create({
       ...req.body,
-      problemId: nextProblemId
+      problemId: nextProblemId,
+      user: req.userId
     });
 
     res.status(201).json({
@@ -45,6 +47,7 @@ exports.createProblem = async (req, res) => {
       message: "Problem created successfully",
       data: note
     });
+
   } catch (err) {
     console.error(err);
     res.status(400).json({
@@ -57,10 +60,6 @@ exports.createProblem = async (req, res) => {
 
 /* ================================
    GET ALL PROBLEMS (MAIN PAGE)
-   Supports:
-   - pagination
-   - search
-   - sort by stars
 ================================ */
 exports.getAllProblem = async (req, res) => {
   try {
@@ -68,8 +67,8 @@ exports.getAllProblem = async (req, res) => {
     const limit = 10;
     const skip = (page - 1) * limit;
 
-    const notes = await Note.find({})
-      .sort({ problemId: 1 })           // 🔥 important
+    const notes = await Note.find({ user: req.userId })
+      .sort({ problemId: 1 })
       .select("problemId problemName tags problemLink")
       .skip(skip)
       .limit(limit)
@@ -90,14 +89,13 @@ exports.getAllProblem = async (req, res) => {
 };
 
 
-
 /* ================================
    GET SINGLE PROBLEM BY ID
 ================================ */
 exports.getSingleProblem = async (req, res) => {
   try {
     const problemId = Number(req.params.problemId);
-    console.log(req.params);
+
     if (isNaN(problemId)) {
       return res.status(400).json({
         success: false,
@@ -105,7 +103,10 @@ exports.getSingleProblem = async (req, res) => {
       });
     }
 
-    const note = await Note.findOne({ problemId });
+    const note = await Note.findOne({
+      problemId,
+      user: req.userId
+    });
 
     if (!note) {
       return res.status(404).json({
@@ -126,6 +127,7 @@ exports.getSingleProblem = async (req, res) => {
   }
 };
 
+
 /* ================================
    UPDATE PROBLEM
 ================================ */
@@ -141,12 +143,9 @@ exports.updateProblem = async (req, res) => {
     }
 
     const updatedNote = await Note.findOneAndUpdate(
-      { problemId },       // 🔥 correct filter
+      { problemId, user: req.userId },
       req.body,
-      {
-        new: true,
-        runValidators: true
-      }
+      { new: true, runValidators: true }
     );
 
     if (!updatedNote) {
@@ -185,7 +184,10 @@ exports.deleteProblem = async (req, res) => {
       });
     }
 
-    const deletedNote = await Note.findOneAndDelete({ problemId });
+    const deletedNote = await Note.findOneAndDelete({
+      problemId,
+      user: req.userId
+    });
 
     if (!deletedNote) {
       return res.status(404).json({
@@ -197,7 +199,7 @@ exports.deleteProblem = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Problem deleted successfully",
-      data: deletedNote   // optional but useful
+      data: deletedNote
     });
 
   } catch (err) {
@@ -217,7 +219,8 @@ exports.getElementByTag = async (req, res) => {
     const { tag } = req.params;
 
     const notes = await Note.find({
-      tags: { $in: [tag] }
+      tags: { $in: [tag] },
+      user: req.userId
     }).sort({ stars: -1 });
 
     res.status(200).json({
@@ -233,13 +236,14 @@ exports.getElementByTag = async (req, res) => {
   }
 };
 
+
 /* ================================
    GET PROBLEMS BY IMPORTANCE (STARS)
 ================================ */
 exports.getElementBySpecificStar = async (req, res) => {
   try {
     const stars = parseInt(req.params.stars);
-     console.log(stars);
+
     if (![0, 1, 2, 3].includes(stars)) {
       return res.status(400).json({
         success: false,
@@ -247,8 +251,10 @@ exports.getElementBySpecificStar = async (req, res) => {
       });
     }
 
-    const notes = await Note.find({ stars })
-      .sort({ updatedAt: -1 });
+    const notes = await Note.find({
+      stars,
+      user: req.userId
+    }).sort({ updatedAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -270,8 +276,8 @@ exports.getElementByImportance = async (req, res) => {
     const limit = 10;
     const skip = (page - 1) * limit;
 
-    const notes = await Note.find({})
-      .sort({ stars: -1, problemId: 1 })   // 🔥 stars DESC
+    const notes = await Note.find({ user: req.userId })
+      .sort({ stars: -1, problemId: 1 })
       .select("problemId problemName stars tags problemLink")
       .skip(skip)
       .limit(limit)

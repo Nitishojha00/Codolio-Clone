@@ -9,7 +9,7 @@ const {
   getElementBySpecificStar,
   getElementByImportance
 } = require("../controllers/noteController");
-
+const auth  = require('../middlewares/auth');
 const router = express.Router();
 
 /* CREATE NEW PROBLEM */

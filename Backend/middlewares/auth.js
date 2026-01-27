@@ -3,6 +3,7 @@ const redisClient = require("../config/redis");
 
 module.exports = async (req, res, next) => {
   try {
+    // console.log("request reached")
     // console.log("AUTH HEADER:", req.headers.authorization); // 👈 DEBUG
     const token = req.cookies.token;
     // console.log(token);
