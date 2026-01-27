@@ -46,7 +46,6 @@
       border-radius: 8px;
       border: 1px solid #ddd;
       font-size: 14px;
-      transition: border 0.2s, box-shadow 0.2s;
     }
 
     input:focus {
@@ -65,7 +64,6 @@
       font-size: 15px;
       font-weight: 500;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
     }
 
     button:hover {
@@ -86,10 +84,6 @@
       color: #667eea;
       text-decoration: none;
       font-weight: 500;
-    }
-
-    .link a:hover {
-      text-decoration: underline;
     }
 
     #otpBox {
@@ -115,7 +109,8 @@
       Already registered? <a href="login.html">Login here</a>
     </div>
 
-    <div id="otpBox" style="display:none;">
+    <!-- ✅ ALWAYS VISIBLE -->
+    <div id="otpBox">
       <input id="otp" placeholder="Enter OTP">
       <button onclick="verifyOTP()">Verify OTP</button>
     </div>
@@ -140,10 +135,9 @@
       );
 
       signupId = res.data.signupId;
-      alert("OTP sent to your email");
-      document.getElementById("otpBox").style.display = "block";
+      // ❌ no hiding / showing logic
     } catch (err) {
-      alert(err.response?.data || "Error");
+      console.log(err.response?.data || err);
     }
   }
 
@@ -160,7 +154,7 @@
 
       window.location.href = "dashboard.html";
     } catch (err) {
-      alert(err.response?.data || "Error");
+      console.log(err.response?.data || err);
     }
   }
 </script>
