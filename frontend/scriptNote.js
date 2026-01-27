@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://127.0.0.1:4000"; // ⚠️ Check if you need '/api' here based on your server.js
+const API_BASE_URL = "https://codolio-clone.vercel.app/"; // ⚠️ Check if you need '/api' here based on your server.js
 axios.defaults.withCredentials = true;
 
 let currentState = {
