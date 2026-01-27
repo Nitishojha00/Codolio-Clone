@@ -1,16 +1,18 @@
-const SibApiV3Sdk = require("@getbrevo/brevo");
+const Brevo = require("@getbrevo/brevo");
 
-const client = SibApiV3Sdk.ApiClient.instance;
+// Create API instance
+const apiInstance = new Brevo.TransactionalEmailsApi();
 
-// 🔐 API KEY
-client.authentications["api-key"].apiKey = process.env.BREVO_API_KEY;
-
-const emailApi = new SibApiV3Sdk.TransactionalEmailsApi();
+// Set API key
+apiInstance.setApiKey(
+  Brevo.TransactionalEmailsApiApiKeys.apiKey,
+  process.env.BREVO_API_KEY
+);
 
 const sendEmail = async (email, otp) => {
-  await emailApi.sendTransacEmail({
+  await apiInstance.sendTransacEmail({
     sender: {
-      email: "no-reply@codolio.com",   // can be anything initially
+      email: "no-reply@codolio.com",
       name: "Codolio"
     },
     to: [{ email }],
