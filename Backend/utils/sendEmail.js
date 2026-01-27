@@ -6,8 +6,8 @@ const sendEmail = async (email, otp) => {
     "https://api.brevo.com/v3/smtp/email",
     {
       sender: {
-        name: "Codolio",
-        email: "no-reply@codolio.com"
+        name: "Nitish",
+        email: "nitishojha00@gmail.com"
       },
       to: [{ email }],
       subject: "Email Verification OTP",
