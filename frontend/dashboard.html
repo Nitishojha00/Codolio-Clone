@@ -156,7 +156,7 @@
 <body>
 
 <header>
-  <div>Welcome, <span id="user">Loading...</span></div>
+  <div>Welcome, <span id="user">Loading...</span>☺️</div>
   <a href="Notes.html"> Notes </a>
   <a onclick="logout()">Logout</a>
 </header>
@@ -172,6 +172,7 @@
       <input id="cf" placeholder="Codeforces">
       <input id="cc" placeholder="CodeChef">
       <input id="gfg" placeholder="GFG">
+      <!-- <input id="atc" placeholder="Atcoder"> -->
     </div>
 
     <button onclick="saveAccounts()">Save Accounts</button>
@@ -211,6 +212,7 @@
 <script>
 /* ================= GLOBAL CONFIG ================= */
 const API = "https://codolio-clone.onrender.com";
+
 axios.defaults.baseURL = API;
 axios.defaults.withCredentials = true;
 
@@ -225,6 +227,7 @@ const lcInput = document.getElementById("lc");
 const cfInput = document.getElementById("cf");
 const ccInput = document.getElementById("cc");
 const gfgInput = document.getElementById("gfg");
+// const atcInput = document.getElementById("atc");
 
 /* ================= LOAD USER ================= */
 async function loadUser() {
@@ -237,6 +240,7 @@ async function loadUser() {
     cfInput.value = p.Codeforces?.username || "";
     ccInput.value = p.CodeChef?.username || "";
     gfgInput.value = p.GFG?.username || "";
+    // atcInput.value = p.ATC?.username || " ";
 
     await loadStats();
   } catch {

@@ -8,150 +8,147 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+    <body>
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars"></i>
+        </button>
 
-    <div class="app-container">
-        <aside class="sidebar">
-            <div class="brand">
-                <i class="fa-solid fa-code"></i>
-                <h2>DSA Tracker</h2>
-            </div>
-            
-            <nav class="nav-links">
-                <button class="nav-btn active" onclick="loadView('importance')">
-                    <i class="fa-solid fa-fire"></i> Top Priority
-                </button>
-                <button class="nav-btn" onclick="loadView('all')">
-                    <i class="fa-solid fa-layer-group"></i> All Problems
-                </button>
-            </nav>
-
-            <div class="filter-section">
-                <h3>Filter by Stars</h3>
-                <div class="star-filters">
-                    <button onclick="filterByStars(3)" class="star-btn three-star">
-                        <i class="fa-solid fa-star text-gold"></i> 3 Stars (High)
-                    </button>
-                    <button onclick="filterByStars(2)" class="star-btn two-star">
-                        <i class="fa-solid fa-star text-gold"></i> 2 Stars (Med)
-                    </button>
-                    <button onclick="filterByStars(1)" class="star-btn one-star">
-                        <i class="fa-solid fa-star text-gold"></i> 1 Star (Low)
-                    </button>
-                    <button onclick="filterByStars(0)" class="star-btn zero-star">
-                        <i class="fa-solid fa-star text-gold"></i> 0 Star (Too Low)
-                    </button>
+        <div class="app-container">
+            <aside class="sidebar" id="sidebar"> 
+                <div class="brand">
+                    <i class="fa-solid fa-code"></i>
+                    <h2>DSA Tracker</h2>
+                    <i class="fa-solid fa-times" style="margin-left:auto; cursor:pointer; display:none;" onclick="toggleSidebar()" id="sidebarClose"></i>
                 </div>
-            </div>
+                
+                <nav class="nav-links">
+                    <button class="nav-btn active" onclick="loadView('importance'); toggleSidebar()">
+                        <i class="fa-solid fa-fire"></i> Top Priority
+                    </button>
+                    <button class="nav-btn" onclick="loadView('all'); toggleSidebar()">
+                        <i class="fa-solid fa-layer-group"></i> All Problems
+                    </button>
+                </nav>
 
-            
-            <button class="add-new-btn" onclick="openModal('createModal')">
-                <i class="fa-solid fa-plus"></i> New Problem
-            </button>
-            <a href="dashboard.html" >
+                <div class="filter-section">
+                    <h3>Filter by Stars</h3>
+                    <div class="star-filters">
+                        <button onclick="filterByStars(3); toggleSidebar()" class="star-btn"><i class="fa-solid fa-star text-gold"></i> 3 Stars</button>
+                        <button onclick="filterByStars(2); toggleSidebar()" class="star-btn"><i class="fa-solid fa-star text-gold"></i> 2 Stars</button>
+                        <button onclick="filterByStars(1); toggleSidebar()" class="star-btn"><i class="fa-solid fa-star text-gold"></i> 1 Star</button>
+                        <button onclick="filterByStars(0); toggleSidebar()" class="star-btn"><i class="fa-solid fa-star text-gold"></i> 0 Star</button>
+                    </div>
+                </div>
+
+                <button class="add-new-btn" onclick="openCreateModal(); toggleSidebar()">
+                    <i class="fa-solid fa-plus"></i> New Problem
+                </button>
+                <a href="dashboard.html" >
              <button class="add-new-btn" style="margin: 30px;">
-                <i class="fa-solid fa-plus"></i> DashBoard
+                 DashBoard
             </button>
             </a>
             <button class="add-new-btn" onclick="logout()" style="background-color: red;">
-                <i class="fa-solid fa-plus"></i> Log Out
+                <i class="fa-solid fa-right-from-bracket"></i> Log Out
             </button>
-        </aside>
+            </aside>
 
-        <main class="main-content">
-            <header>
-                <h1 id="page-title">Dashboard</h1>
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="tagSearchInput" placeholder="Search by tag (e.g., array)...">
-                </div>
-            </header>
-
-            <div id="loader" class="loader hidden"></div>
-
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th width="5%">ID</th>
-                            <th width="25%">Problem Name</th>
-                            <th width="20%">Tags</th>
-                            <th width="15%">Importance</th>
-                            <th width="15%">Link</th>
-                            <th width="10%">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="problemTableBody">
-                        </tbody>
-                </table>
-            </div>
-
-            <div class="pagination">
-                <button id="prevBtn" onclick="changePage(-1)" disabled>Previous</button>
-                <span id="pageIndicator">Page 1</span>
-                <button id="nextBtn" onclick="changePage(1)">Next</button>
-            </div>
-        </main>
-    </div>
-
-    <div id="createModal" class="modal">
-        <div class="modal-content large-modal">
-            <span class="close" onclick="closeModal('createModal')">&times;</span>
-            <h2>Add New Problem</h2>
-            <form id="createForm">
-                <div class="row">
-                    <div class="form-group half">
-                        <label>Problem Name *</label>
-                        <input type="text" name="problemName" required placeholder="e.g. Reverse Linked List">
+            <main class="main-content">
+                <header>
+                    <h1 id="page-title">Dashboard</h1>
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass search-btn-icon" id="searchIconBtn"></i>
+                        <input type="text" id="tagSearchInput" placeholder="Search by tag (e.g. array)...">
                     </div>
-                    <div class="form-group half">
-                        <label>Problem Link</label>
-                        <input type="url" name="problemLink" placeholder="https://leetcode.com/...">
-                    </div>
+                </header>
+                
+                <div id="loader" class="loader hidden"></div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th width="5%">ID</th>
+                                <th width="30%">Problem Name</th> <th width="20%">Tags</th>
+                                <th width="15%">Importance</th>
+                                <th width="10%">Link</th>
+                                <th width="10%">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="problemTableBody"></tbody>
+                    </table>
                 </div>
 
-                <div class="row">
-                    <div class="form-group half">
-                        <label>Tags (comma separated)</label>
-                        <input type="text" name="tags" placeholder="linkedlist, recursion">
-                    </div>
-                    <div class="form-group half">
-                        <label>Importance</label>
-                        <select name="stars">
-                            <option value="0">0 - None</option>
-                            <option value="1">1 - Low</option>
-                            <option value="2">2 - Medium</option>
-                            <option value="3">3 - High</option>
-                        </select>
-                    </div>
+                <div class="pagination">
+                    <button id="prevBtn">Previous</button>
+                    
+                    <span id="pageIndicator"></span>
+                    
+                    <button id="nextBtn">Next</button>
                 </div>
 
-                <div class="form-group">
-                    <label>Description (Brief)</label>
-                    <textarea name="problemDescription" rows="2" placeholder="What is the problem asking?"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>My Solution / Notes</label>
-                    <textarea name="notes" rows="4" placeholder="Logic used, time complexity, etc."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Mistakes to Avoid</label>
-                    <textarea name="mistake" rows="2" placeholder="Edge cases I missed, common pitfalls..."></textarea>
-                </div>
-
-                <button type="submit" class="submit-btn">Save Problem</button>
-            </form>
+            </main>
         </div>
-    </div>
 
-    <div id="viewModal" class="modal">
-    <div class="modal-content view-card-large" id="viewContent">
+        <div id="createModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('createModal')">&times;</span>
+                <h2 id="modalTitle">Add New Problem</h2>
+                <form id="createForm">
+                    <input type="hidden" name="problemId" id="editProblemId">
+
+                    <div class="row">
+                        <div class="form-group half">
+                            <label>Problem Name *</label>
+                            <input type="text" name="problemName" id="inpName" required>
+                        </div>
+                        <div class="form-group half">
+                            <label>Problem Link</label>
+                            <input type="url" name="problemLink" id="inpLink">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group half">
+                            <label>Tags (comma separated)</label>
+                            <input type="text" name="tags" id="inpTags">
+                        </div>
+                        <div class="form-group half">
+                            <label>Importance</label>
+                            <select name="stars" id="inpStars">
+                                <option value="0">0 - Lowest</option>
+                                <option value="1">1 - Low</option>
+                                <option value="2">2 - Medium</option>
+                                <option value="3">3 - High</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea name="problemDescription" id="inpDesc" rows="2"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Solution / Notes</label>
+                        <textarea name="notes" id="inpNotes" rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mistakes to Avoid</label>
+                        <textarea name="mistake" id="inpMistake" rows="2"></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="modalSubmitBtn">Save Problem</button>
+                </form>
+            </div>
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="scriptNote.js"></script>
-</body>
-</html>
+        <div id="viewModal" class="modal">
+            <div class="modal-content view-card-large" id="viewContent"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="scriptNote.js"></script>
+    </body>
+</html
