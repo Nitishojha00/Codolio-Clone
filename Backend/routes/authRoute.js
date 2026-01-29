@@ -9,7 +9,7 @@ const router = express.Router();
 
 /* TEMP OTP STORE (simple testing) */
 let pendingSignup = null;
-const limit = 30;
+const limit = 4;
 
 /* ================= SIGNUP : GENERATE OTP ================= */
 const redis = require("../config/redis");
@@ -131,5 +131,3 @@ router.post("/login", async (req, res) => {
 
 module.exports = router;
 
-
-// update name bro

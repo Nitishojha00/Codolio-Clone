@@ -4,7 +4,7 @@ const noteSchema = new mongoose.Schema(
   {
     problemId:{
       type: Number,
-      unique:true
+      // unique:true
     },
     problemName: {
       type: String,
